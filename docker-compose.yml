@@ -10,8 +10,53 @@ services:
     volumes: 
       - ./:/var/www/html:cached
       - ./.docker/nginx:/etc/nginx/conf.d
+    depends_on: 
+      - app
     networks: 
       - sparrowowblog-network
+  
+  app:
+    build: 
+      context: ./.docker/php
+      dockerfile: Dockerfile
+    container_name: sparrowowblog-app
+    restart: unless-stopped
+    volumes: 
+      - ./:/var/www/html:cached
+      - ./.docker/php/php-fpm.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on: 
+      - mariadb
+      - redis
+    networks: 
+      - sparrowowblog-network
+
+  mariadb:
+    image: mariadb:10.5.5
+    container_name: sparrowowblog-mariadb
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    volumes: 
+      - ./data/mysql:/var/lib/mysql
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=sparrowowblog
+      - MYSQL_PASSWORD=sparrowowblog
+      - MYSQL_DATABASE=sparrowowblog
+    networks: 
+      - sparrowowblog-network
+
+  redis:
+    image: redis:alpine
+    container_name: sparrowowblog-redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes: 
+      - ./data/redis:/data
+    networks: 
+      - sparrowowblog-network
+
 
 networks: 
   sparrowowblog-network:
