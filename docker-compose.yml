@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: sparrowowblog-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes: 
+      - ./:/var/www/html:cached
+      - ./.docker/nginx:/etc/nginx/conf.d
+      - ./.docker/nginx/ssl:/etc/nginx/conf.d/ssl
+    networks: 
+      - sparrowowblog-network
+
+networks: 
+  sparrowowblog-network:
+    driver: bridge
+
+volumes: 
+  sparrowowblog-volumen:
+    driver: local
