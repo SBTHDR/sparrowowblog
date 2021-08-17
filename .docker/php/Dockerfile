@@ -18,3 +18,8 @@ RUN apk add --no-cache --virtual .build-deps \
     && pecl clear-cache \
     && docker-php-source delete \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* 
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+USER www-data
